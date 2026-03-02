@@ -159,10 +159,28 @@ contactForm.addEventListener("submit", (e) => {
   formSubmit.textContent = "Enviando...";
   formSubmit.disabled = true;
 
-  setTimeout(() => {
-    contactForm.reset();
-    formSubmit.textContent = original;
-    formSubmit.disabled = false;
-    showToast("Mensagem enviada! Entraremos em contato em breve.");
-  }, 900);
+  const formData = new FormData(contactForm);
+
+  fetch(contactForm.action, {
+    method: "POST",
+    body: formData,
+    headers: {
+      "Accept": "application/json"
+    }
+  })
+    .then(response => {
+      if (response.ok) {
+        contactForm.reset();
+        showToast("Mensagem enviada! Entraremos em contato em breve.");
+      } else {
+        showToast("Ocorreu um erro ao enviar. Tente novamente.");
+      }
+    })
+    .catch(error => {
+      showToast("Erro de conexão. Verifique sua internet.");
+    })
+    .finally(() => {
+      formSubmit.textContent = original;
+      formSubmit.disabled = false;
+    });
 });
